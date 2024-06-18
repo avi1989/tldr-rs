@@ -11,7 +11,7 @@ pub fn initialize(config_dir: &PathBuf) {
     print!("Initializing tldr\n");
     let file_buf = download_release();
     extract_file(&file_buf, config_dir);
-    let current_version = get_current_version();
+    let current_version = get_latest_version();
     let mut file = File::create(config_dir.join("version")).unwrap();
     file.write(current_version.as_bytes()).unwrap();
 }
@@ -38,6 +38,31 @@ pub fn read_page(name: &str, config_dir: &PathBuf, platform: Option<String>) {
 
     print!("\n");
     markdown::render_file(&file_to_read);
+}
+
+pub fn get_latest_version() -> String {
+    let client = reqwest::blocking::Client::new();
+
+    let response = client
+        .get("https://api.github.com/repos/tldr-pages/tldr/releases/latest")
+        .header(USER_AGENT, "tldr-rust")
+        .send()
+        .unwrap_or_else(|error| {
+            panic!("Failed to get latest release: {}", error);
+        })
+        .json::<serde_json::Value>()
+        .unwrap_or_else(|error| {
+            panic!("Failed to parse json: {}", error);
+        });
+
+    let version = response
+        .get("tag_name")
+        .unwrap()
+        .as_str()
+        .unwrap()
+        .to_owned();
+
+    return version;
 }
 
 fn get_page_location(name: &str, config_dir: &PathBuf, platform: Option<String>) -> Option<String> {
@@ -124,31 +149,4 @@ fn extract_file(file_buf: &PathBuf, config_dir: &PathBuf) {
             std::io::copy(&mut file, &mut outfile).unwrap();
         }
     }
-}
-
-fn get_current_version() -> String {
-    let client = reqwest::blocking::Client::new();
-
-    let response = client
-        .get("https://api.github.com/repos/tldr-pages/tldr/releases/latest")
-        .header(USER_AGENT, "tldr-rust")
-        .send()
-        .unwrap_or_else(|error| {
-            panic!("Failed to get latest release: {}", error);
-        })
-        .json::<serde_json::Value>()
-        .unwrap_or_else(|error| {
-            panic!("Failed to parse json: {}", error);
-        });
-
-    let version = response
-        .get("tag_name")
-        .unwrap()
-        .as_str()
-        .unwrap()
-        .to_owned();
-
-    print!("{:?}", version);
-
-    return version;
 }

@@ -1,10 +1,10 @@
+use colored::Colorize;
+use std::io::BufRead;
 use std::{
     fs::File,
     io::{self},
     path::PathBuf,
 };
-use std::io::BufRead;
-use colored::Colorize;
 
 pub mod color;
 
@@ -85,26 +85,22 @@ fn render_text(line: &str) -> String {
                 current_block_type = None;
                 continue;
             }
-        }
-        else if current_block_type == Some("link") {
+        } else if current_block_type == Some("link") {
             if char == '>' {
-                let link_block = &line[current_block_start.unwrap()+1..idx];
+                let link_block = &line[current_block_start.unwrap() + 1..idx];
                 let styled_code = render_link(link_block);
                 result.push_str(&styled_code);
                 current_block_start = None;
                 current_block_type = None;
             }
-        }
-        else if current_block_type.is_none() {
+        } else if current_block_type.is_none() {
             if char == '`' {
                 current_block_type = Some("code");
                 current_block_start = Some(idx);
-            }
-            else if char == '<' {
+            } else if char == '<' {
                 current_block_type = Some("link");
                 current_block_start = Some(idx);
-            }
-            else {
+            } else {
                 result.push(char);
             }
         }
@@ -117,7 +113,10 @@ fn render_link(line: &str) -> String {
     let color = get_color("#008787");
 
     let styled_line = line.custom_color(color).underline();
-    return format!("\u{1b}]8;;{}\u{1b}\\{}\u{1b}]8;;\u{1b}\\", line, styled_line)
+    return format!(
+        "\u{1b}]8;;{}\u{1b}\\{}\u{1b}]8;;\u{1b}\\",
+        line, styled_line
+    );
 }
 
 fn render_code(line: &str) -> String {
