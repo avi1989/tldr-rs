@@ -1,41 +1,30 @@
-use clap::{builder::Str, Parser};
-use reqwest::header::USER_AGENT;
-use std::{
-    env,
-    fs::{self, File},
-    io::Write,
-    path::{Path, PathBuf},
-};
+use clap::{Parser};
 
 mod tldr;
+mod markdown;
 
 #[derive(Parser)]
-#[command(version, about, long_about=None)]
+#[command(about, long_about=None)]
 #[derive(Debug)]
 struct Cli {
     /// The name of the tool you want to see the tldr page for.
     name: String,
 
-    #[arg(short, long, value_name = "platform")]
+    #[arg(short, long, value_name = "platform", help="Specify the platform of the command.")]
     platform: Option<String>,
 
-    #[arg(short, long)]
+    #[arg(short, long, help="Update the TLDR cache.")]
     update: bool,
 
-    #[arg(short, long)]
+    #[arg(short, long, help="Deletes the local tldr cache and refreshes it.")]
     reset: bool,
+
+    #[arg(short, long, help="Print version.")]
+    version: bool,
 }
 
 fn main() {
     let cli = Cli::parse();
-    print!(
-        "platform: {}\n",
-        cli.platform.unwrap_or("linux".to_string())
-    );
-    print!("name: {}\n", cli.name);
-    print!("update: {}\n", cli.update);
-    print!("reset: {}\n", cli.reset);
-
     let config_dir = dirs::home_dir().unwrap().join(".config/tldr-2");
 
     if !config_dir.join("version").exists() {

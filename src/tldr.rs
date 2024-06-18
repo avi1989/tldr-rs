@@ -1,16 +1,11 @@
-use clap::builder::Str;
-use core::fmt;
 use reqwest::header::USER_AGENT;
 use std::{
     env,
-    fmt::format,
     fs::{self, File},
-    io::{self, Read, Write},
-    path::{Path, PathBuf},
-    process::exit,
+    io::Write,
+    path::PathBuf,
 };
-use std::io::{self, BufRead};
-use std::path::Path;
+use crate::markdown;
 
 pub fn initialize(config_dir: &PathBuf) {
     print!("Initializing tldr\n");
@@ -33,19 +28,7 @@ pub fn read_page(name: &str, config_dir: &PathBuf) {
         .join(page_location.unwrap())
         .join(format!("{name}.md"));
 
-    // let mut file_content = fs::read_to_string(file_to_read).unwrap();
-    // file_content = file_content.replace("{{", "").replace("}}", "");
-
-    // termimad::print_inline(&file_content)
-}
-
-fn render_page(file_path: &PathBuf) {
-    let file = File::open(file_path).unwrap();
-    let lines = io::BufReader::new(file).lines();
-
-    for line in lines.flatten() {
-
-    }
+    markdown::render_file(&file_to_read);
 }
 
 fn get_page_location(name: &str, config_dir: &PathBuf) -> Option<String> {
