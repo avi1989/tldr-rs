@@ -1,3 +1,4 @@
+use crate::markdown;
 use reqwest::header::USER_AGENT;
 use std::{
     env,
@@ -5,7 +6,6 @@ use std::{
     io::Write,
     path::PathBuf,
 };
-use crate::markdown;
 
 pub fn initialize(config_dir: &PathBuf) {
     print!("Initializing tldr\n");
@@ -16,27 +16,46 @@ pub fn initialize(config_dir: &PathBuf) {
     file.write(current_version.as_bytes()).unwrap();
 }
 
-pub fn read_page(name: &str, config_dir: &PathBuf) {
-    let page_location = get_page_location(name, config_dir);
+pub fn read_page(name: &str, config_dir: &PathBuf, platform: Option<String>) {
+    let page_location = get_page_location(name, config_dir, platform);
     if page_location.is_none() {
         println!("Command: {name} not found");
         return;
     }
 
+    let page_folder = page_location.unwrap();
+
     let file_to_read = config_dir
         .join("pages")
-        .join(page_location.unwrap())
+        .join(&page_folder)
         .join(format!("{name}.md"));
 
+    println!("Loaded {} from platform: {}", name, &page_folder);
+
+    for _i in 0..80 {
+        print!("⎯");
+    }
+
+    print!("\n");
     markdown::render_file(&file_to_read);
 }
 
-fn get_page_location(name: &str, config_dir: &PathBuf) -> Option<String> {
+fn get_page_location(name: &str, config_dir: &PathBuf, platform: Option<String>) -> Option<String> {
     let current_os = env::consts::OS;
     let base_page_path = config_dir.join("pages");
 
+    let first_platform = platform.unwrap_or(current_os.to_string());
+
     let folders_to_check = [
-        current_os, "common", "android", "freebsd", "linux", "netbsd", "openbsd", "osx", "sunos",
+        first_platform.as_str(),
+        "common",
+        "android",
+        "freebsd",
+        "linux",
+        "netbsd",
+        "openbsd",
+        "osx",
+        "sunos",
         "windows",
     ];
 

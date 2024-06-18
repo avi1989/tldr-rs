@@ -1,4 +1,6 @@
-use clap::{Parser};
+use std::fs;
+
+use clap::Parser;
 
 mod tldr;
 mod markdown;
@@ -8,7 +10,7 @@ mod markdown;
 #[derive(Debug)]
 struct Cli {
     /// The name of the tool you want to see the tldr page for.
-    name: String,
+    name: Option<String>,
 
     #[arg(short, long, value_name = "platform", help="Specify the platform of the command.")]
     platform: Option<String>,
@@ -32,5 +34,17 @@ fn main() {
         tldr::initialize(&config_dir);
     }
 
-    tldr::read_page(&cli.name, &config_dir)
+    let selected_platform = match cli.platform {
+        Some(x) => Some(x),
+        None => None,
+    };
+
+    if cli.version {
+        let version = fs::read_to_string(config_dir.join("version")).unwrap();
+        print!("{}", version);
+
+        return;
+    }
+
+    tldr::read_page(&cli.name.unwrap(), &config_dir, selected_platform)
 }
