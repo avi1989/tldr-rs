@@ -1,0 +1,11 @@
+[package]
+name = "tldr"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+clap = { version = "4.5.7", features = ["derive"] }
+dirs = "5.0.1"
+reqwest = { version = "0.12.5", features = ["blocking", "json"] }
+serde_json = "1.0.117"
+zip = "2.1.3"
