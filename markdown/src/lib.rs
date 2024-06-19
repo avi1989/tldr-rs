@@ -1,3 +1,7 @@
+#![warn(missing_docs)]
+
+//! A cross platform library to render markdown on the terminal.
+
 use colored::{ColoredString, Colorize};
 use std::io::BufRead;
 use std::{
@@ -11,6 +15,7 @@ use themes::{ElementTheme, Theme, color::Color};
 /// A module that contains the structs and functions required to theme the markdown.
 pub mod themes;
 
+/// Renders the provided file in markdown.
 pub fn render_file(file_path: &PathBuf, theme: &Theme) {
     let file = File::open(file_path).unwrap();
     let lines = io::BufReader::new(file).lines();
@@ -22,7 +27,7 @@ pub fn render_file(file_path: &PathBuf, theme: &Theme) {
     println!("\n");
 }
 
-pub fn render_line<'a>(line: &'a str, theme: &Theme) -> (&'a str, String) {
+fn render_line<'a>(line: &'a str, theme: &Theme) -> (&'a str, String) {
     if line.starts_with("- ") {
         let styled_line = get_bullet_line(line, theme);
         return ("bullet", styled_line);

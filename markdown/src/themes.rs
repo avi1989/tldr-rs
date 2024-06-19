@@ -1,5 +1,6 @@
 use color::Color;
 
+/// A module to assist with setting colors.
 pub mod color;
 
 /// Properties required to theme the element.
