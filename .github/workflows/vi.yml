@@ -1,0 +1,25 @@
+name: CI
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+jobs:
+    test:
+        name: run tests
+        strategy:
+            matrix:
+                platform: [ubuntu-latest, macos-latest, windows-latest]
+                toolchain: [stable, 1.75.0]
+        runs-on: ${{ matrix.platform }}
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+            - name: Setup Rust
+              uses: dtolnay/rust-toolchain@master
+              with: 
+                toolchain: ${{ matrix.toolchain }}
+            - name: Check project
+              run: cargo check
+            - name: Run tests
+              run: cargo test
