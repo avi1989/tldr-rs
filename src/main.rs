@@ -82,6 +82,7 @@ fn main() {
 
     if cli.name.is_none() {
         println!("Please enter a command. use tldr --help to see usage");
+        return;
     }
 
     let selected_platform = match cli.platform {
