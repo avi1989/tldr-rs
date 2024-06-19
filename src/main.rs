@@ -1,6 +1,7 @@
 use std::fs;
 
 use clap::Parser;
+use markdown::themes::{self};
 
 mod markdown;
 mod tldr;
@@ -35,6 +36,7 @@ struct Cli {
 
 fn main() {
     let cli = Cli::parse();
+    let theme = themes::get_theme();
     // let tldr_cache = dirs::home_dir().unwrap().join(".config/tldr-2");
     let tldr_cache = dirs::cache_dir().unwrap().join("tldr-rs");
 
@@ -90,5 +92,5 @@ fn main() {
         None => None,
     };
 
-    tldr::read_page(&cli.name.unwrap(), &tldr_cache, selected_platform)
+    tldr::read_page(&cli.name.unwrap(), &tldr_cache, selected_platform, &theme);
 }

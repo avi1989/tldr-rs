@@ -1,4 +1,4 @@
-use crate::markdown;
+use crate::{markdown, themes::Theme};
 use reqwest::header::USER_AGENT;
 use std::{
     env,
@@ -16,7 +16,7 @@ pub fn initialize(config_dir: &PathBuf) {
     file.write(current_version.as_bytes()).unwrap();
 }
 
-pub fn read_page(name: &str, config_dir: &PathBuf, platform: Option<String>) {
+pub fn read_page(name: &str, config_dir: &PathBuf, platform: Option<String>, theme: &Theme) {
     let page_location = get_page_location(name, config_dir, platform);
     if page_location.is_none() {
         println!("Command: {name} not found");
@@ -37,7 +37,7 @@ pub fn read_page(name: &str, config_dir: &PathBuf, platform: Option<String>) {
     }
 
     print!("\n");
-    markdown::render_file(&file_to_read);
+    markdown::render_file(&file_to_read, theme);
 }
 
 pub fn get_latest_version() -> String {
