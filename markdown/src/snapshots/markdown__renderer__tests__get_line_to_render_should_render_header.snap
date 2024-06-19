@@ -1,0 +1,8 @@
+---
+source: markdown/src/renderer.rs
+expression: result
+---
+(
+    "header",
+    "\n\u{1b}[1m This is a test \u{1b}[0m",
+)

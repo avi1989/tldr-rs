@@ -1,0 +1,5 @@
+---
+source: markdown/src/renderer.rs
+expression: result
+---
+"this is some \u{1b}[48;2;48;48;48;38;2;255;96;96m embedded code \u{1b}[0m in text"

@@ -1,0 +1,5 @@
+---
+source: markdown/src/renderer.rs
+expression: result
+---
+"this is some \u{1b}]8;;embedded link\u{1b}\\\u{1b}[4;38;2;0;135;135membedded link\u{1b}[0m\u{1b}]8;;\u{1b}\\ in text"

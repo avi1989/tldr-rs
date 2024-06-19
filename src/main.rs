@@ -1,24 +1,46 @@
-use std::fs;
+use std::{fs, io::IsTerminal, process::exit};
 
-use clap::Parser;
+use clap::{Parser, ValueEnum};
 
-mod markdown;
-mod tldr;
+mod tldr_helper;
+
+#[derive(ValueEnum, Copy, Clone, Debug, PartialEq, Eq)]
+enum Platform {
+    Android,
+    Common,
+    FreeBsd,
+    NetBsd,
+    OpenBsd,
+    Osx,
+    SunOs,
+    Windows,
+}
+
+impl std::fmt::Display for Platform {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        self.to_possible_value()
+            .expect("no values are skipped")
+            .get_name()
+            .fmt(f)
+    }
+}
 
 #[derive(Parser)]
 #[command(about, long_about=None)]
 #[derive(Debug)]
 struct Cli {
     /// The name of the tool you want to see the tldr page for.
-    name: Option<String>,
+    name: Option<Vec<String>>,
 
     #[arg(
         short,
         long,
+        require_equals = true,
         value_name = "platform",
-        help = "Specify the platform of the command."
+        help = "Specify the platform of the command.",
+        value_enum
     )]
-    platform: Option<String>,
+    platform: Option<Platform>,
 
     #[arg(short, long, help = "Update the TLDR cache.")]
     update: bool,
@@ -35,12 +57,13 @@ struct Cli {
 
 fn main() {
     let cli = Cli::parse();
+    let theme = markdown_rs_terminal::themes::get_default_theme();
     // let tldr_cache = dirs::home_dir().unwrap().join(".config/tldr-2");
     let tldr_cache = dirs::cache_dir().unwrap().join("tldr-rs");
 
     if !tldr_cache.join("version").exists() {
         print!("TLDR has not been initialized. Initializing now.");
-        tldr::initialize(&tldr_cache);
+        tldr_helper::initialize(&tldr_cache);
     }
 
     if cli.version {
@@ -51,13 +74,17 @@ fn main() {
     }
 
     if cli.cache_dir {
-        print!("Cache Directory: {:?}", &tldr_cache);
+        if std::io::stdout().is_terminal() {
+            print!("Cache Directory: {:?}", &tldr_cache.display());
+        } else {
+            print!("{}", &tldr_cache.display());
+        }
         return;
     }
 
     if cli.update {
         let current_version = fs::read_to_string(tldr_cache.join("version")).unwrap();
-        let latest_version = tldr::get_latest_version();
+        let latest_version = tldr_helper::get_latest_version();
 
         if current_version == latest_version {
             println!("No new updates...");
@@ -75,7 +102,7 @@ fn main() {
             )
         });
 
-        tldr::initialize(&tldr_cache);
+        tldr_helper::initialize(&tldr_cache);
 
         return;
     }
@@ -85,10 +112,18 @@ fn main() {
         return;
     }
 
+    let command = match cli.name {
+        Some(x) if !x.is_empty() => x.join("-"),
+        _ => {
+            println!("Please enter a command. use tldr --help to see usage");
+            exit(-1);
+        }
+    };
+
     let selected_platform = match cli.platform {
-        Some(x) => Some(x),
+        Some(x) => Some(x.to_string()),
         None => None,
     };
 
-    tldr::read_page(&cli.name.unwrap(), &tldr_cache, selected_platform)
+    tldr_helper::read_page(&command, &tldr_cache, selected_platform, &theme);
 }

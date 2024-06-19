@@ -1,0 +1,5 @@
+---
+source: markdown/src/renderer.rs
+expression: result
+---
+"│ This is an indent"
