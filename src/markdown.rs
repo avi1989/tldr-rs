@@ -1,4 +1,3 @@
-use color::Color;
 use colored::{ColoredString, Colorize};
 use std::io::BufRead;
 use std::{
@@ -7,9 +6,9 @@ use std::{
     path::PathBuf,
 };
 
-use themes::{ElementColors, Theme};
+use themes::{ElementTheme, Theme, Color};
 
-pub mod color;
+/// A module that contains the structs and functions required to theme the markdown.
 pub mod themes;
 
 pub fn render_file(file_path: &PathBuf, theme: &Theme) {
@@ -44,7 +43,7 @@ pub fn render_line<'a>(line: &'a str, theme: &Theme) -> (&'a str, String) {
         return ("code", styled_line);
     }
 
-    return ("", String::from(""));
+    return ("", String::from(line));
 }
 
 fn render_header(line: &str, theme: &Theme) -> String {
@@ -69,7 +68,7 @@ fn render_indent(line: &str, theme: &Theme) -> String {
     return format!("{}", line_to_render);
 }
 
-fn render_text(line: &str, theme: &Theme, cur_element: &ElementColors) -> String {
+fn render_text(line: &str, theme: &Theme, _cur_element: &ElementTheme) -> String {
     let mut result = String::new();
 
     let mut current_block_type: Option<&str> = None;
@@ -128,7 +127,7 @@ fn render_code(line: &str, theme: &Theme) -> String {
     return format!("{}", styled_line);
 }
 
-fn get_colored_text(text: &str, color: &ElementColors) -> ColoredString {
+fn get_colored_text(text: &str, color: &ElementTheme) -> ColoredString {
     let mut colored_text = colored::ColoredString::from(text);
 
     if color.fg.is_some() {

@@ -1,4 +1,4 @@
-use crate::{markdown, themes::Theme};
+use tldr::markdown::themes::Theme;
 use reqwest::header::USER_AGENT;
 use std::{
     env,
@@ -37,7 +37,7 @@ pub fn read_page(name: &str, config_dir: &PathBuf, platform: Option<String>, the
     }
 
     print!("\n");
-    markdown::render_file(&file_to_read, theme);
+    tldr::markdown::render_file(&file_to_read, theme);
 }
 
 pub fn get_latest_version() -> String {

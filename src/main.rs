@@ -1,10 +1,8 @@
 use std::fs;
 
 use clap::Parser;
-use markdown::themes::{self};
 
-mod markdown;
-mod tldr;
+mod tldr_helper;
 
 #[derive(Parser)]
 #[command(about, long_about=None)]
@@ -36,13 +34,13 @@ struct Cli {
 
 fn main() {
     let cli = Cli::parse();
-    let theme = themes::get_theme();
+    let theme = tldr::markdown::themes::get_default_theme();
     // let tldr_cache = dirs::home_dir().unwrap().join(".config/tldr-2");
     let tldr_cache = dirs::cache_dir().unwrap().join("tldr-rs");
 
     if !tldr_cache.join("version").exists() {
         print!("TLDR has not been initialized. Initializing now.");
-        tldr::initialize(&tldr_cache);
+        tldr_helper::initialize(&tldr_cache);
     }
 
     if cli.version {
@@ -59,7 +57,7 @@ fn main() {
 
     if cli.update {
         let current_version = fs::read_to_string(tldr_cache.join("version")).unwrap();
-        let latest_version = tldr::get_latest_version();
+        let latest_version = tldr_helper::get_latest_version();
 
         if current_version == latest_version {
             println!("No new updates...");
@@ -77,7 +75,7 @@ fn main() {
             )
         });
 
-        tldr::initialize(&tldr_cache);
+        tldr_helper::initialize(&tldr_cache);
 
         return;
     }
@@ -92,5 +90,5 @@ fn main() {
         None => None,
     };
 
-    tldr::read_page(&cli.name.unwrap(), &tldr_cache, selected_platform, &theme);
+    tldr_helper::read_page(&cli.name.unwrap(), &tldr_cache, selected_platform, &theme);
 }
