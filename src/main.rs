@@ -34,7 +34,7 @@ struct Cli {
 
 fn main() {
     let cli = Cli::parse();
-    let theme = tldr::markdown::themes::get_default_theme();
+    let theme = markdown::themes::get_default_theme();
     // let tldr_cache = dirs::home_dir().unwrap().join(".config/tldr-2");
     let tldr_cache = dirs::cache_dir().unwrap().join("tldr-rs");
 

@@ -6,7 +6,7 @@ use std::{
     path::PathBuf,
 };
 
-use themes::{ElementTheme, Theme, Color};
+use themes::{ElementTheme, Theme, color::Color};
 
 /// A module that contains the structs and functions required to theme the markdown.
 pub mod themes;
