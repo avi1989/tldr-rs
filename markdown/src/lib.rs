@@ -55,10 +55,7 @@ fn render_header(line: &str, theme: &Theme) -> String {
     let item_to_print = format!(" {} ", &line[2..]);
     let colored_text = get_colored_text(&item_to_print, &theme.header);
 
-    return format!(
-        "\n{}",
-        colored_text.bold()
-    );
+    return format!("\n{}", colored_text.bold());
 }
 
 fn get_bullet_line(line: &str, theme: &Theme) -> String {
@@ -115,7 +112,7 @@ fn render_text(line: &str, theme: &Theme, _cur_element: &ElementTheme) -> String
 fn render_link(line: &str, theme: &Theme) -> String {
     let mut colored_line = get_colored_text(line, &theme.link);
     colored_line = colored_line.underline();
-    
+
     return format!(
         "\u{1b}]8;;{}\u{1b}\\{}\u{1b}]8;;\u{1b}\\",
         line, colored_line
@@ -139,7 +136,7 @@ fn get_colored_text(text: &str, color: &ElementTheme) -> ColoredString {
         let fg_color = convert_color(color.fg.as_ref().unwrap());
         colored_text = colored_text.custom_color(fg_color);
     }
-    
+
     if color.bg.is_some() {
         let bg_color = convert_color(color.bg.as_ref().unwrap());
         colored_text = colored_text.on_custom_color(bg_color);

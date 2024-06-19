@@ -1,8 +1,7 @@
-use color::Color;
-
 /// A module to assist with setting colors.
 pub mod color;
 
+pub use color::Color;
 /// Properties required to theme the element.
 pub struct ElementTheme {
     /// Foreground color
