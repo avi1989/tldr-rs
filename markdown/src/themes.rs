@@ -39,7 +39,7 @@ impl ElementTheme {
     /// 
     /// Example
     /// ```rust
-    /// let a = ElementTheme::new("#000", "#FFF");
+    /// let a = markdown::ElementTheme::new(Some("#000"), Some("#FFF"));
     /// ```
     pub fn new(fg: Option<&str>, bg: Option<&str>) -> Self {
         let bg_color = match bg {
