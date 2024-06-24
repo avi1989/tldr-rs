@@ -1,8 +1,0 @@
----
-source: markdown/src/renderer.rs
-expression: result
----
-(
-    "indent",
-    "│ This is a test",
-)

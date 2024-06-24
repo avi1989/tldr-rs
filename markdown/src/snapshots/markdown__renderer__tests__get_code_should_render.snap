@@ -1,5 +1,0 @@
----
-source: markdown/src/renderer.rs
-expression: result
----
-"\u{1b}[48;2;48;48;48;38;2;255;96;96m https://insta.rs \u{1b}[0m"

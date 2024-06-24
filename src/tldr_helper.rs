@@ -1,4 +1,4 @@
-use markdown_rs_terminal::themes::Theme;
+use markterm::themes::Theme;
 use reqwest::header::USER_AGENT;
 use std::{
     env,
@@ -37,7 +37,7 @@ pub fn read_page(name: &str, config_dir: &PathBuf, platform: Option<String>, the
     }
 
     print!("\n");
-    markdown_rs_terminal::render_file(&file_to_read)
+    markterm::render_file_to_stdout(&file_to_read, None);
     // markdown::render_file(&file_to_read, theme);
 }
 

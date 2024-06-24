@@ -1,8 +1,0 @@
----
-source: markdown/src/renderer.rs
-expression: result
----
-(
-    "bullet",
-    "• This is a test",
-)

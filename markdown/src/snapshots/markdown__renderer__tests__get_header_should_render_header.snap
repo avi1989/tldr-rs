@@ -1,5 +1,0 @@
----
-source: markdown/src/renderer.rs
-expression: result
----
-"\n\u{1b}[1m This is a header \u{1b}[0m"
