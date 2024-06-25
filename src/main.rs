@@ -53,11 +53,13 @@ struct Cli {
 
     #[arg(long, name = "cache-dir", help = "Gets the cache directory")]
     cache_dir: bool,
+
+    #[arg(short, long, name = "path", help = "Print's only the file path")]
+    file_path: bool,
 }
 
 fn main() {
     let cli = Cli::parse();
-    let theme = markterm::themes::get_default_theme();
     // let tldr_cache = dirs::home_dir().unwrap().join(".config/tldr-2");
     let tldr_cache = dirs::cache_dir().unwrap().join("tldr-rs");
 
@@ -120,10 +122,23 @@ fn main() {
         }
     };
 
-    let selected_platform = match cli.platform {
-        Some(x) => Some(x.to_string()),
-        None => None,
-    };
+    let selected_platform = cli.platform.map(|x| x.to_string());
 
-    tldr_helper::read_page(&command, &tldr_cache, selected_platform, &theme);
+    if cli.file_path {
+        let folder: Option<String> =
+            tldr_helper::get_page_location(&command, &tldr_cache, selected_platform);
+        match folder {
+            Some(folder) => {
+                let file_to_read = tldr_cache
+                    .join("pages")
+                    .join(folder)
+                    .join(format!("{command}.md"));
+                println!("{}", file_to_read.to_str().unwrap())
+            }
+            _ => println!("File not found"),
+        }
+    } else {
+        let theme = markterm::themes::get_default_theme();
+        tldr_helper::read_page(&command, &tldr_cache, selected_platform, &theme);
+    }
 }

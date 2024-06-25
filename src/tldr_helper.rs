@@ -4,19 +4,19 @@ use std::{
     env,
     fs::{self, File},
     io::Write,
-    path::PathBuf,
+    path::{Path, PathBuf},
 };
 
-pub fn initialize(config_dir: &PathBuf) {
-    print!("Initializing tldr\n");
+pub fn initialize(config_dir: &Path) {
+    println!("Initializing tldr");
     let file_buf = download_release();
     extract_file(&file_buf, config_dir);
     let current_version = get_latest_version();
     let mut file = File::create(config_dir.join("version")).unwrap();
-    file.write(current_version.as_bytes()).unwrap();
+    file.write_all(current_version.as_bytes()).unwrap();
 }
 
-pub fn read_page(name: &str, config_dir: &PathBuf, platform: Option<String>, theme: &Theme) {
+pub fn read_page(name: &str, config_dir: &Path, platform: Option<String>, theme: &Theme) {
     let page_location = get_page_location(name, config_dir, platform);
     if page_location.is_none() {
         println!("Command: {name} not found");
@@ -36,8 +36,8 @@ pub fn read_page(name: &str, config_dir: &PathBuf, platform: Option<String>, the
         print!("⎯");
     }
 
-    print!("\n");
-    markterm::render_file_to_stdout(&file_to_read, None);
+    println!();
+    let _ = markterm::render_file_to_stdout(&file_to_read, Some(theme));
     // markdown::render_file(&file_to_read, theme);
 }
 
@@ -63,10 +63,14 @@ pub fn get_latest_version() -> String {
         .unwrap()
         .to_owned();
 
-    return version;
+    version
 }
 
-fn get_page_location(name: &str, config_dir: &PathBuf, platform: Option<String>) -> Option<String> {
+pub fn get_page_location(
+    name: &str,
+    config_dir: &Path,
+    platform: Option<String>,
+) -> Option<String> {
     let current_os = env::consts::OS;
     let base_page_path = config_dir.join("pages");
 
@@ -95,7 +99,7 @@ fn get_page_location(name: &str, config_dir: &PathBuf, platform: Option<String>)
         }
     }
 
-    return None;
+    None
 }
 
 fn download_release() -> PathBuf {
@@ -125,11 +129,11 @@ fn download_release() -> PathBuf {
         dir.join(&path_to_dowload)
     );
 
-    return path_to_dowload;
+    path_to_dowload
 }
 
-fn extract_file(file_buf: &PathBuf, config_dir: &PathBuf) {
-    let file = fs::File::open(&file_buf).unwrap();
+fn extract_file(file_buf: &PathBuf, config_dir: &Path) {
+    let file = fs::File::open(file_buf).unwrap();
 
     println!("Extracting file {:?}", file);
     let mut archive = zip::ZipArchive::new(file).unwrap();
@@ -138,12 +142,12 @@ fn extract_file(file_buf: &PathBuf, config_dir: &PathBuf) {
         let mut file = archive.by_index(i).unwrap();
         let outpath = config_dir.join(file.enclosed_name().unwrap());
 
-        if (&*file.name()).ends_with('/') {
+        if (file.name()).ends_with('/') {
             fs::create_dir_all(&outpath).unwrap();
         } else {
             if let Some(p) = outpath.parent() {
                 if !p.exists() {
-                    fs::create_dir_all(&p).unwrap();
+                    fs::create_dir_all(p).unwrap();
                 }
             }
             let mut outfile = fs::File::create(&outpath).unwrap();
