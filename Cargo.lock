@@ -1399,9 +1399,9 @@ dependencies = [
 
 [[package]]
 name = "markterm"
-version = "0.2.3"
+version = "0.2.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a1bf672d2be3e5cf913f73854cd8c4a78b15004ffb6d85ea2a862e60abc1558f"
+checksum = "5a72f307eb40bbb1e60c43596ea5c17f6db5212afc918ff4c1f36eccc08a14eb"
 dependencies = [
  "markdown",
  "termbg",
