@@ -41,7 +41,7 @@ jobs:
       - run: cargo clippy
   test:
     name: run tests
-    needs: [commitlint, lint]
+    needs: [commitlint]
     env:
       CLICOLOR_FORCE: true
     strategy:
