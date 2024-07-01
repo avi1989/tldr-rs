@@ -56,6 +56,13 @@ struct Cli {
 
     #[arg(short, long, name = "path", help = "Print's only the file path")]
     file_path: bool,
+
+    #[arg(
+        short = 'L',
+        long,
+        help = "2 letters describing the language to find the command in"
+    )]
+    language: Option<String>,
 }
 
 fn main() {
@@ -122,23 +129,25 @@ fn main() {
         }
     };
 
+    let languages = match cli.language {
+        Some(lang) => vec![lang],
+        None => tldr_helper::get_languages_from_environment(),
+    };
+
     let selected_platform = cli.platform.map(|x| x.to_string());
 
     if cli.file_path {
-        let folder: Option<String> =
-            tldr_helper::get_page_location(&command, &tldr_cache, selected_platform);
-        match folder {
-            Some(folder) => {
-                let file_to_read = tldr_cache
-                    .join("pages")
-                    .join(folder)
-                    .join(format!("{command}.md"));
-                println!("{}", file_to_read.to_str().unwrap())
+        let location =
+            tldr_helper::get_page_location(&command, &tldr_cache, selected_platform, languages);
+        match location {
+            Some((file_path, _)) => {
+                println!("{}", file_path.to_str().unwrap())
             }
             _ => println!("File not found"),
         }
     } else {
         let theme = markterm::themes::get_default_theme();
-        tldr_helper::read_page(&command, &tldr_cache, selected_platform, &theme);
+
+        tldr_helper::read_page(&command, &tldr_cache, selected_platform, languages, &theme);
     }
 }
