@@ -7,25 +7,25 @@ This package is not available in any package manager at this time. The only way 
 ### On Linux and x64 Mac
 ```bash
 # Download binary
-curl -L https://github.com/avi1989/tldr-rust/releases/latest/download/tldr_amd64 -o tldr
+curl -L https://github.com/avi1989/tldr-rust/releases/latest/download/tldr_amd64 -o ./tldr
 
 # Make binary executable
-chmod +x tldr
+chmod +x ./tldr
 
 # Copy into path
-sudo cp tldr /usr/local/tldr
+sudo cp ./tldr /usr/local/tldr
 ```
 
 ### On M1 Mac
 ```bash
 # Download binary
-curl -L https://github.com/avi1989/tldr-rust/releases/latest/download/tldr_darwin -o tldr
+curl -L https://github.com/avi1989/tldr-rust/releases/latest/download/tldr_darwin -o ./tldr
 
 # Make binary executable
-chmod +x tldr
+chmod +x ./tldr
 
 # Copy into path
-sudo cp tldr /usr/local/bin/tldr
+sudo cp ./tldr /usr/local/bin/tldr
 ```
 
 # Usage
@@ -45,6 +45,6 @@ Arguments:
 
   -v, --version              Print version.
 
-      --cache-dir            Gets the cache directory
+  --cache-dir            Gets the cache directory
 
   -h, --help                 Print help
