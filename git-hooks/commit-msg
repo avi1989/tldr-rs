@@ -1,0 +1,14 @@
+#!/bin/sh
+
+if [ -z "$(npm list -g | grep @commitlint/config-conventional)" ]; then
+    echo "Commit Failed: @commitlint/config-conventional not installed." >&2
+    echo "Please run npm install -g @commitlint/config-conventional to install it" >&2
+    exit 1
+else
+    npx commitlint --edit $1
+fi;
+
+
+
+# ❯ npm install -g @commitlint/cli
+# ❯ npm install -g @commitlint/config-conventional
