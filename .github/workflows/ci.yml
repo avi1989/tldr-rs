@@ -32,6 +32,14 @@ jobs:
     needs: [commitlint]
     steps:
       - uses: actions/checkout@v4
+      - name: cache
+        uses: actions/cache@v2
+        with:
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
       - uses: dtolnay/rust-toolchain@master
         with:
           toolchain: nightly
@@ -52,6 +60,14 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: cache
+        uses: actions/cache@v2
+        with:
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@master
         with:
