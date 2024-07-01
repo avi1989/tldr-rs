@@ -46,7 +46,6 @@ jobs:
       - name: Release
         uses: softprops/action-gh-release@v2
         with:
-          body_path: ${{ github.workspace }}-CHANGELOG.txt
           files: |
             target/release/tldr_amd64
           token: ${{ secrets.GITHUB_TOKEN }}
