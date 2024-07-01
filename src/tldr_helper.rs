@@ -37,7 +37,8 @@ pub fn read_page(name: &str, config_dir: &Path, platform: Option<String>, theme:
     }
 
     println!();
-    let _ = markterm::render_file_to_stdout(&file_to_read, Some(theme));
+    let _ =
+        markterm::render_file_to_stdout(&file_to_read, Some(theme), markterm::ColorChoice::Auto);
     // markdown::render_file(&file_to_read, theme);
 }
 
