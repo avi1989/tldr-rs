@@ -1,27 +1,61 @@
 name: CI
 on:
   push:
-    branches:
-      - master
   pull_request:
 jobs:
-    test:
-        name: run tests
-        env:
-          CLICOLOR_FORCE: true
-        strategy:
-            matrix:
-                platform: [ubuntu-latest, macos-latest, windows-latest]
-                toolchain: [stable]
-        runs-on: ${{ matrix.platform }}
-        steps:
-            - name: Checkout
-              uses: actions/checkout@v4
-            - name: Setup Rust
-              uses: dtolnay/rust-toolchain@master
-              with: 
-                toolchain: ${{ matrix.toolchain }}
-            - name: Check project
-              run: cargo check
-            - name: Run tests on markdown
-              run: cargo test
+  commitlint:
+    name: Run commit lint
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Install required dependencies
+        run: |
+          curl -fsSL https://deb.nodesource.com/setup_22.x -o nodesource_setup.sh
+          sudo -E bash nodesource_setup.sh
+          sudo apt-get install -y nodejs
+      - name: Install commitlint
+        run: |
+          npm install conventional-changelog-conventionalcommits
+          npm install commitlint@latest @commitlint/config-conventional
+
+      - name: Validate current commit (last commit) with commitlint
+        if: github.event_name == 'push'
+        run: npx commitlint --last --verbose
+
+      - name: Validate PR commits with commitlint
+        if: github.event_name == 'pull_request'
+        run: npx commitlint --from ${{ github.event.pull_request.head.sha }}~${{ github.event.pull_request.commits }} --to ${{ github.event.pull_request.head.sha }} --verbose
+  lint:
+    runs-on: ubuntu-22.04
+    needs: [commitlint]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: nightly
+          components: rustfmt, clippy
+      - run: cargo fmt --all -- --check
+      - run: cargo check
+      - run: cargo clippy
+  test:
+    name: run tests
+    needs: [commitlint, lint]
+    env:
+      CLICOLOR_FORCE: true
+    strategy:
+      matrix:
+        platform: [ubuntu-latest, macos-latest, windows-latest]
+        toolchain: [stable]
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: ${{ matrix.toolchain }}
+          components: rustfmt, clippy
+      - name: Run tests on markdown
+        run: cargo test

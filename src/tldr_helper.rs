@@ -103,21 +103,25 @@ pub fn get_page_location(
 }
 
 fn download_release() -> PathBuf {
-    let dir = env::temp_dir();
-    let path_to_dowload = dir.join("tldr/tldr.zip");
+    let dir = env::temp_dir().join("tldr");
+    let zip_path = dir.join("tldr.zip");
 
-    if (dir.join(&path_to_dowload)).exists() {
-        println!("File already exists at {:?}", dir);
-        return path_to_dowload;
+    if !dir.exists() {
+        fs::create_dir(&dir).unwrap();
     }
 
-    println!("Downloading file to {:?}", path_to_dowload);
+    if (dir.join(&zip_path)).exists() {
+        println!("File already exists at {:?}", dir);
+        return zip_path;
+    }
+
+    println!("Downloading file to {:?}", zip_path);
     let response = reqwest::blocking::get(
         "https://github.com/tldr-pages/tldr/releases/latest/download/tldr.zip",
     )
     .unwrap_or_else(|error| panic!("Failed to download file: {}", error))
     .copy_to(
-        &mut std::fs::File::create(dir.join(&path_to_dowload))
+        &mut std::fs::File::create(dir.join(&zip_path))
             .unwrap_or_else(|error| panic!("Failed to create file: {}", error)),
     )
     .unwrap();
@@ -126,10 +130,10 @@ fn download_release() -> PathBuf {
     println!(
         "File ({:.2} MB) downloaded to {:?}",
         response_bytes,
-        dir.join(&path_to_dowload)
+        dir.join(&zip_path)
     );
 
-    path_to_dowload
+    zip_path
 }
 
 fn extract_file(file_buf: &PathBuf, config_dir: &Path) {

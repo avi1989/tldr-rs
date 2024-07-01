@@ -1399,9 +1399,9 @@ dependencies = [
 
 [[package]]
 name = "markterm"
-version = "0.2.1"
+version = "0.2.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "24f0bf07f3fc199e99f4c4a2b1df21b042e134738733c7e1f4275341c1159983"
+checksum = "a1bf672d2be3e5cf913f73854cd8c4a78b15004ffb6d85ea2a862e60abc1558f"
 dependencies = [
  "markdown",
  "termbg",
@@ -2311,7 +2311,7 @@ dependencies = [
 
 [[package]]
 name = "tldr"
-version = "0.1.0"
+version = "0.1.2"
 dependencies = [
  "clap",
  "colored",
