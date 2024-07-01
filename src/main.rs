@@ -51,16 +51,16 @@ struct Cli {
     #[arg(short, long, help = "Print version.")]
     version: bool,
 
-    #[arg(long, name = "cache-dir", help = "Gets the cache directory")]
+    #[arg(long, name = "cache-dir", help = "Gets the cache directory.")]
     cache_dir: bool,
 
-    #[arg(short, long, name = "path", help = "Print's only the file path")]
+    #[arg(short, long, name = "path", help = "Print's only the file path.")]
     file_path: bool,
 
     #[arg(
         short = 'L',
         long,
-        help = "2 letters describing the language to find the command in"
+        help = "2 letters describing the language to find the command in."
     )]
     language: Option<String>,
 }
