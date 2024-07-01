@@ -40,13 +40,15 @@ jobs:
           toolchain: nightly
           components: rustfmt, clippy
       - name: cache
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
           path: |
-            ~/.cargo/registry
-            ~/.cargo/git
-            target
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
       - name: Build
         run: cargo build --release && strip target/release/tldr && mv target/release/tldr target/release/tldr_amd64
 
@@ -71,13 +73,15 @@ jobs:
           components: rustfmt, clippy
 
       - name: cache
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
           path: |
-            ~/.cargo/registry
-             ~/.cargo/git
-             target
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
 
       - name: Build
         run: cargo build --all --release
@@ -103,13 +107,15 @@ jobs:
           targets: x86_64-apple-darwin
           components: rustfmt, clippy
       - name: cache
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
           path: |
-            ~/.cargo/registry
-            ~/.cargo/git
-            target
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
       - name: Build for mac
         run: cargo build --all --release && strip target/release/tldr && mv target/release/tldr target/release/tldr_darwin
 
