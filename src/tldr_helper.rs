@@ -83,7 +83,7 @@ pub fn get_latest_version() -> String {
 
     let response = client
         .get("https://api.github.com/repos/tldr-pages/tldr/releases/latest")
-        .header(USER_AGENT, "tldr-rust")
+        .header(USER_AGENT, "tldr-rs")
         .send()
         .unwrap_or_else(|error| {
             panic!("Failed to get latest release: {}", error);

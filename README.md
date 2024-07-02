@@ -7,7 +7,7 @@ This package is not available in any package manager at this time. The only way 
 ### On Linux and x64 Mac
 ```bash
 # Download binary
-curl -L https://github.com/avi1989/tldr-rust/releases/latest/download/tldr_amd64 -o ./tldr
+curl -L https://github.com/avi1989/tldr-rs/releases/latest/download/tldr_amd64 -o ./tldr
 
 # Make binary executable
 chmod +x ./tldr
@@ -19,7 +19,7 @@ sudo cp ./tldr /usr/local/tldr
 ### On M1 Mac
 ```bash
 # Download binary
-curl -L https://github.com/avi1989/tldr-rust/releases/latest/download/tldr_darwin -o ./tldr
+curl -L https://github.com/avi1989/tldr-rs/releases/latest/download/tldr_darwin -o ./tldr
 
 # Make binary executable
 chmod +x ./tldr
