@@ -54,6 +54,9 @@ struct Cli {
     #[arg(long, name = "cache-dir", help = "Gets the cache directory.")]
     cache_dir: bool,
 
+    #[arg(long, help = "Prints the version of the tldr pages")]
+    pages_version: bool,
+
     #[arg(short, long, name = "path", help = "Print's only the file path.")]
     file_path: bool,
 
@@ -76,9 +79,15 @@ fn main() {
     }
 
     if cli.version {
-        let version = fs::read_to_string(tldr_cache.join("version")).unwrap();
-        print!("{}", version);
+        let app_version: &str = env!("CARGO_PKG_VERSION");
+        println!("v{}", app_version);
 
+        return;
+    }
+
+    if cli.pages_version {
+        let version = fs::read_to_string(tldr_cache.join("version")).unwrap();
+        println!("{}", version);
         return;
     }
 
