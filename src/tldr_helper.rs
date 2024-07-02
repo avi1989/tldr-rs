@@ -69,7 +69,6 @@ pub fn get_page_location(
         let language_path = config_dir.join(format!("pages.{}", language));
         for folder in folders_to_check {
             let file_path = language_path.join(folder).join(format!("{name}.md"));
-            println!("Checking {:?}", language_path);
             if file_path.exists() {
                 return Some((file_path, folder.to_string()));
             }
