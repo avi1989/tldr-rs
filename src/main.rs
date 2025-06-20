@@ -1,6 +1,6 @@
 use std::{fs, io::IsTerminal, process::exit};
 
-use clap::{Parser, ValueEnum};
+use clap::{Parser, Subcommand, ValueEnum};
 
 mod tldr_helper;
 
@@ -25,6 +25,22 @@ impl std::fmt::Display for Platform {
     }
 }
 
+#[derive(Subcommand, Debug)]
+enum Commands {
+    /// Update the TLDR cache
+    Update,
+
+    /// Delete the local tldr cache and refresh it
+    Reset,
+
+    /// Add a page from a URL
+    Add {
+        /// URL of the page to add
+        name: String,
+        url: String,
+    },
+}
+
 #[derive(Parser)]
 #[command(about, long_about=None)]
 #[derive(Debug)]
@@ -41,12 +57,6 @@ struct Cli {
         value_enum
     )]
     platform: Option<Platform>,
-
-    #[arg(short, long, help = "Update the TLDR cache.")]
-    update: bool,
-
-    #[arg(short, long, help = "Deletes the local tldr cache and refreshes it.")]
-    reset: bool,
 
     #[arg(short, long, help = "Print version.")]
     version: bool,
@@ -66,12 +76,15 @@ struct Cli {
         help = "2 letters describing the language to find the command in."
     )]
     language: Option<String>,
+
+    #[command(subcommand)]
+    command: Option<Commands>,
 }
 
 fn main() {
     let cli = Cli::parse();
-    // let tldr_cache = dirs::home_dir().unwrap().join(".config/tldr-2");
-    let tldr_cache = dirs::cache_dir().unwrap().join("tldr-rs");
+    let tldr_cache_home = dirs::cache_dir().unwrap().join("tldr-rs");
+    let tldr_cache = tldr_cache_home.join("default");
 
     if !tldr_cache.join("version").exists() {
         print!("TLDR has not been initialized. Initializing now.");
@@ -100,29 +113,41 @@ fn main() {
         return;
     }
 
-    if cli.update {
-        let current_version = fs::read_to_string(tldr_cache.join("version")).unwrap();
-        let latest_version = tldr_helper::get_latest_version();
+    if let Some(cmd) = &cli.command {
+        match cmd {
+            Commands::Update => {
+                let current_version = fs::read_to_string(tldr_cache.join("version")).unwrap();
+                let latest_version = tldr_helper::get_latest_version();
 
-        if current_version == latest_version {
-            println!("No new updates...");
+                if current_version == latest_version {
+                    println!("No new updates...");
+                }
+
+                return;
+            },
+            Commands::Reset => {
+                println!("Deleting {:?}", &tldr_cache);
+                std::fs::remove_dir_all(&tldr_cache).unwrap_or_else(|err| {
+                    println!(
+                        "Unable to delete directory {:?} due to {}",
+                        &tldr_cache, err
+                    )
+                });
+
+                tldr_helper::initialize(&tldr_cache);
+
+                return;
+            },
+            Commands::Add { name, url } => {
+                println!("Adding page: {} from URL: {}", name, url);
+                match tldr_helper::add_page_from_url(url, &tldr_cache) {
+                    Ok(_) => println!("Successfully added page from URL: {}", url),
+                    Err(e) => eprintln!("Error adding page: {}", e),
+                }
+
+                return;
+            }
         }
-
-        return;
-    }
-
-    if cli.reset {
-        println!("Deleting {:?}", &tldr_cache);
-        std::fs::remove_dir_all(&tldr_cache).unwrap_or_else(|err| {
-            println!(
-                "Unable to delete directory {:?} due to {}",
-                &tldr_cache, err
-            )
-        });
-
-        tldr_helper::initialize(&tldr_cache);
-
-        return;
     }
 
     if cli.name.is_none() {

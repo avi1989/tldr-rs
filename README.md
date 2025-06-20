@@ -29,22 +29,26 @@ sudo cp ./tldr /usr/local/bin/tldr
 ```
 
 # Usage
-`tldr [OPTIONS] [NAME]`
+`tldr [OPTIONS] [COMMAND|NAME]`
 
 Arguments:
 
 **[NAME]**:  The name of the tool you want to see the tldr page for
 
+**[COMMAND]**:
+
+  `update`                   Update the TLDR cache.
+
+  `reset`                    Deletes the tldr cache and refreshes it.
+
+  `add <url>`                Add a page from a URL.
+
 **[Options]**:
 
   -p, --platform <platform>  Specify the platform of the command.
 
-  -u, --update               Update the TLDR cache.
-
-  -r, --reset                Deletes the tldr cache and refreshes it.
-
   -v, --version              Print version.
 
-  --cache-dir            Gets the cache directory
+  --cache-dir                Gets the cache directory
 
   -h, --help                 Print help
