@@ -161,13 +161,30 @@ fn extract_file(file_buf: &PathBuf, config_dir: &Path) {
     }
 }
 
-pub fn add_page_from_url(url: &str, _config_dir: &Path) -> Result<(), String> {
-    // This is a placeholder implementation
-    println!("Add page from URL functionality is not implemented yet.");
-    println!("Requested URL: {}", url);
+pub fn list_repos(config_dir: &Path) -> Result<Vec<String>, String> {
+    let read_dir = config_dir.read_dir().map_err(|e| e.to_string())?;
 
-    // Return success without performing any operations
-    Ok(())
+    let mut repos = Vec::new();
+    for entry in read_dir.flatten() {
+        if entry.path().is_dir() {
+            if let Some(name) = entry.file_name().to_str() {
+                if name != "default" {
+                    repos.push(name.to_string());
+                }
+            }
+        }
+    }
+
+    Ok(repos)
+}
+
+pub fn remove_repo(config_dir: &Path, name: &str) -> Result<(), String> {
+    let path = config_dir.join(name);
+    if path.exists() {
+        fs::remove_dir_all(path).map_err(|e| e.to_string())
+    } else {
+        Err(format!("Repository {} does not exist", name))
+    }
 }
 
 pub fn get_languages_from_environment() -> Vec<String> {

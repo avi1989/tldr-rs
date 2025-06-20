@@ -1,7 +1,10 @@
 use std::{fs, io::IsTerminal, process::exit};
 
+use crate::git_helpers::clone_repository;
+use crate::tldr_helper::{list_repos, remove_repo};
 use clap::{Parser, Subcommand, ValueEnum};
 
+mod git_helpers;
 mod tldr_helper;
 
 #[derive(ValueEnum, Copy, Clone, Debug, PartialEq, Eq)]
@@ -26,6 +29,22 @@ impl std::fmt::Display for Platform {
 }
 
 #[derive(Subcommand, Debug)]
+enum RepoCommands {
+    /// Add a page from a URL
+    Add {
+        /// URL of the page to add
+        name: String,
+        url: String,
+    },
+
+    List,
+
+    Remove {
+        name: String,
+    },
+}
+
+#[derive(Subcommand, Debug)]
 enum Commands {
     /// Update the TLDR cache
     Update,
@@ -33,11 +52,10 @@ enum Commands {
     /// Delete the local tldr cache and refresh it
     Reset,
 
-    /// Add a page from a URL
-    Add {
-        /// URL of the page to add
-        name: String,
-        url: String,
+    /// Repository management commands
+    Repo {
+        #[command(subcommand)]
+        command: RepoCommands,
     },
 }
 
@@ -138,13 +156,43 @@ fn main() {
 
                 return;
             }
-            Commands::Add { name, url } => {
-                println!("Adding page: {} from URL: {}", name, url);
-                match tldr_helper::add_page_from_url(url, &tldr_cache) {
-                    Ok(_) => println!("Successfully added page from URL: {}", url),
-                    Err(e) => eprintln!("Error adding page: {}", e),
-                }
+            Commands::Repo { command } => {
+                match command {
+                    RepoCommands::Add { name, url } => {
+                        println!("Adding page: {} from URL: {}", name, url);
+                        match clone_repository(url, name, &tldr_cache_home) {
+                            Ok(_) => println!("Successfully added page from URL: {}", url),
+                            Err(e) => eprintln!("Error adding page: {}", e),
+                        }
+                    }
+                    RepoCommands::List => {
+                        println!("Listing repositories:");
+                        match list_repos(&tldr_cache_home) {
+                            Ok(repos) => {
+                                if repos.is_empty() {
+                                    println!("No repositories found.");
+                                } else {
+                                    for repo in repos {
+                                        println!("- {}", repo);
+                                    }
+                                }
+                            }
+                            Err(e) => eprintln!("Error listing repositories: {}", e),
+                        }
+                    }
+                    RepoCommands::Remove { name } => {
+                        if name == "default" {
+                            eprintln!("Cannot remove default repository");
+                            return;
+                        }
 
+                        let result = remove_repo(&tldr_cache_home, name);
+                        match result {
+                            Ok(_) => println!("Successfully removed repository: {}", name),
+                            Err(e) => eprintln!("Error removing repository: {}", e),
+                        }
+                    }
+                }
                 return;
             }
         }
