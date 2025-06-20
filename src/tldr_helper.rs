@@ -171,16 +171,8 @@ pub fn add_page_from_url(url: &str, _config_dir: &Path) -> Result<(), String> {
 }
 
 pub fn get_languages_from_environment() -> Vec<String> {
-    let lang = match env::var("LANG") {
-        Ok(lang) => Some(lang),
-        Err(_) => None,
-    };
-
-    let language = match env::var("LANGUAGE") {
-        Ok(lang) => Some(lang),
-        Err(_) => None,
-    };
-
+    let lang = env::var("LANG").ok();
+    let language = env::var("LANGUAGE").ok();
     get_languages(lang.as_deref(), language.as_deref())
 }
 

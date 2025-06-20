@@ -124,7 +124,7 @@ fn main() {
                 }
 
                 return;
-            },
+            }
             Commands::Reset => {
                 println!("Deleting {:?}", &tldr_cache);
                 std::fs::remove_dir_all(&tldr_cache).unwrap_or_else(|err| {
@@ -137,7 +137,7 @@ fn main() {
                 tldr_helper::initialize(&tldr_cache);
 
                 return;
-            },
+            }
             Commands::Add { name, url } => {
                 println!("Adding page: {} from URL: {}", name, url);
                 match tldr_helper::add_page_from_url(url, &tldr_cache) {
@@ -151,7 +151,7 @@ fn main() {
     }
 
     if cli.name.is_none() {
-        println!("Please enter a command. use tldr --help to see usage");
+        println!("Please enter a command. use tldr --help to see usage. ");
         return;
     }
 

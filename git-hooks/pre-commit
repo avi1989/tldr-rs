@@ -5,21 +5,22 @@ exe=$(which rustfmt)
 if [ -n "$exe" ]
 then
     # field separator to the new line
-    IFS=$'\n'
+    IFS=$'\r\n'
 
     for line in $(git status -s)
     do
         # if added or modified
         if [[ $line == A* || $line == M* ]]
         then
+            filename=${line:3}
             # check file extension
-            if [[ $line == *.rs ]]
+            if [[ $filename =~ \.rs$ ]]
             then
-                echo "$(pwd)/${line:3}"
+                echo "$(pwd)/${filename}"
                 # format file
-                rustfmt $(pwd)/${line:3}
+                rustfmt $(pwd)/${filename}
                 # add changes
-                git add $(pwd)/${line:3}
+                git add $(pwd)/${filename}
             fi
         fi
     done
@@ -29,4 +30,4 @@ else
 fi
 
 cargo check
-cargo clippy
+cargo clippy -- -D warnings
